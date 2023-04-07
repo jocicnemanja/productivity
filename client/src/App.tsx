@@ -6,6 +6,9 @@ import styles from './App.module.css';
 const App: Component = () => {
   return (
     <div class={styles.App}>
+      <h1 class="text-3xl font-bold underline">
+        Hello world!
+      </h1>
       <header class={styles.header}>
         <img src={logo} class={styles.logo} alt="logo" />
         <p>
