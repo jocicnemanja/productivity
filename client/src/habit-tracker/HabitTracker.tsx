@@ -2,7 +2,7 @@ import { Component, createSignal, For } from "solid-js";
 import { Dropdown, Table } from "solid-bootstrap";
 import { createStore } from "solid-js/store";
 import { DateTime } from "luxon";
-import { Habit, HabitRecord, HabitRecords } from "./models/HabbitModels";
+import { Habit} from "./models/HabbitModels";
 import { fakeHabitsData } from "./models/FakeHabitsData";
 
 export type Month = {
@@ -41,13 +41,15 @@ const HabitTracker: Component = () => {
     setSelcetedMonth(month);
   };
 
-  const th = (month: Month) => {
+  const thForSelectedMonth = (month: Month) => {
     const days = [];
     for (let i = 1; i <= daysInMonth(); i++) {
       days.push(<th>{i}</th>);
     }
     return days;
   };
+
+
 
   return (
     <div>
@@ -71,7 +73,7 @@ const HabitTracker: Component = () => {
         <thead>
           <tr>
             <th>Habit name</th>
-            {th(selectedMonth())}
+            {thForSelectedMonth(selectedMonth())}
           </tr>
         </thead>
         <tbody>
@@ -79,7 +81,7 @@ const HabitTracker: Component = () => {
             {(habit: Habit) => (
               <tr>
                 <td>{habit.description}</td>
-                <For each={habit.dailyHabitRecords}>
+                <For each={habit.dailyRecords}>
                   {(dailyHabitRecord) => (
                     <td>
                       {dailyHabitRecord === "SKIP" ? (

@@ -5,7 +5,7 @@
     stregth: "WEEK" | "MEDIUM" | "STRONG";
     month: number;
     year: number;
-    dailyHabitRecords: ("DONE" | "NOT_DONE" | "SKIP") [];
+    dailyRecords: ("DONE" | "NOT_DONE" | "SKIP") [];
   };
   
 

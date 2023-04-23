@@ -8,7 +8,7 @@ export const fakeHabitsData: Habit[] = [
     stregth: "WEEK",
     month: 1,
     year: 2023,
-    dailyHabitRecords: [
+    dailyRecords: [
       "DONE",
       "DONE",
       "NOT_DONE",
@@ -49,7 +49,7 @@ export const fakeHabitsData: Habit[] = [
     stregth: "WEEK",
     month: 1,
     year: 2023,
-    dailyHabitRecords: [
+    dailyRecords: [
       "SKIP",
       "DONE",
       "NOT_DONE",
