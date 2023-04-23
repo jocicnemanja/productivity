@@ -1,2 +1,2 @@
 // 
-export const test = 0;
+export default {}
