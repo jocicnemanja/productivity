@@ -39,7 +39,6 @@ export const fakeHabitsData: Habit[] = [
       "NOT_DONE",
       "NOT_DONE",
       "NOT_DONE",
-      "NOT_DONE",
     ],
   },
   {
@@ -62,7 +61,6 @@ export const fakeHabitsData: Habit[] = [
       "NOT_DONE",
       "NOT_DONE",
       "SKIP",
-      "NOT_DONE",
       "NOT_DONE",
       "NOT_DONE",
       "NOT_DONE",
