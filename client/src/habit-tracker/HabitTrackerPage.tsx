@@ -3,13 +3,16 @@ import { createStore } from "solid-js/store";
 import { DateTime } from "luxon";
 import { Habit } from "./models/HabbitModels";
 import { fakeHabitsData } from "./models/FakeHabitsData";
+import { useNavigate } from '@solidjs/router';
 
 export type Month = {
   id: number;
   monthName: string;
 };
 
-const HabitTracker: Component = () => {
+const HabitTrackerPage: Component = () => {
+  const navigate = useNavigate();
+
   const getDaysInMonth = (year: number, month: number): number => {
     return new Date(year, month, 0).getDate();
   };
@@ -34,7 +37,7 @@ const HabitTracker: Component = () => {
   );
   const daysInMonth = () => getDaysInMonth(selectedYear(), selectedMonth().id);
 
-  const onYearChange = (year: Month) => {};
+  const onYearChange = (year: Month) => { };
 
   const onMonthChange = (month: Month) => {
     setSelcetedMonth(month);
@@ -47,6 +50,11 @@ const HabitTracker: Component = () => {
     }
     return days;
   };
+
+  const addNewHabit = () => {
+    debugger
+    navigate("/habit-tracker/add-habit")
+  }
 
   return (
     <div>
@@ -75,57 +83,57 @@ const HabitTracker: Component = () => {
         <div class="bg-white py-4 md:py-7 px-4 md:px-8 xl:px-10">
           <div class="sm:flex items-center justify-between">
             <div class="flex items-center">
-    
+
             </div>
-            <button class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
+            <button onClick={addNewHabit} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
               <p class="text-sm font-medium leading-none text-white">
                 Add new habit
               </p>
             </button>
           </div>
           <div class="mt-7 overflow-x-auto">
-          <table class="w-full whitespace-nowrap">
-          <thead>
-            <tr>
-              <th class="text-md font-semibold leading-6 text-gray-900">Habit</th>
-              {thForSelectedMonth(selectedMonth())}
-            </tr>
-          </thead>
-          <tbody>
-            <For each={fakeHabitsData}>
-              {(habit: Habit) => (
-                <tr
-                  tabindex="0"
-                  class="focus:outline-none h-16 border border-gray-100 rounded"
-                >
-                  <td class="text-sm font-semibold leading-6 text-gray-800">{habit.description}</td>
-                  <For each={habit.dailyRecords}>
-                    {(dailyHabitRecord) => (
-                      <td>
-                        {dailyHabitRecord === "SKIP" ? (
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            id="flexCheckDefault"
-                            disabled
-                            style="background: grey"
-                          />
-                        ) : (
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            id="flexCheckDefault"
-                            checked={dailyHabitRecord === "DONE" ? true : false}
-                          />
-                        )}
-                      </td>
-                    )}
-                  </For>
+            <table class="w-full whitespace-nowrap">
+              <thead>
+                <tr>
+                  <th class="text-md font-semibold leading-6 text-gray-900">Habit</th>
+                  {thForSelectedMonth(selectedMonth())}
                 </tr>
-              )}
-            </For>
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                <For each={fakeHabitsData}>
+                  {(habit: Habit) => (
+                    <tr
+                      tabindex="0"
+                      class="focus:outline-none h-16 border border-gray-100 rounded"
+                    >
+                      <td class="text-sm font-semibold leading-6 text-gray-800">{habit.description}</td>
+                      <For each={habit.dailyRecords}>
+                        {(dailyHabitRecord) => (
+                          <td>
+                            {dailyHabitRecord === "SKIP" ? (
+                              <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="flexCheckDefault"
+                                disabled
+                                style="background: grey"
+                              />
+                            ) : (
+                              <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="flexCheckDefault"
+                                checked={dailyHabitRecord === "DONE" ? true : false}
+                              />
+                            )}
+                          </td>
+                        )}
+                      </For>
+                    </tr>
+                  )}
+                </For>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -133,4 +141,4 @@ const HabitTracker: Component = () => {
   );
 };
 
-export default HabitTracker;
+export default HabitTrackerPage;
