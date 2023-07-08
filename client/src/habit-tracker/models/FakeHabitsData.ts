@@ -1,11 +1,11 @@
-import { Habit } from "./HabbitModels";
+import { Habit } from "./HabitModels";
 
 export const fakeHabitsData: Habit[] = [
   {
     id: "1",
     description: "Ucis jedan sat engleski",
     bestStrike: 0,
-    stregth: "WEEK",
+    strength: "WEEK",
     month: 1,
     year: 2023,
     dailyRecords: [
@@ -45,7 +45,7 @@ export const fakeHabitsData: Habit[] = [
     id: "2",
     description: "Ustani u 08:00",
     bestStrike: 0,
-    stregth: "WEEK",
+    strength: "WEEK",
     month: 1,
     year: 2023,
     dailyRecords: [

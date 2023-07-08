@@ -1,12 +1,14 @@
   export type Habit = {
-    id: string;
+    id: string | null;
     description: string;
     bestStrike: number;
-    stregth: "WEEK" | "MEDIUM" | "STRONG";
+    strength: "WEEK" | "MEDIUM" | "STRONG";
     month: number;
     year: number;
     dailyRecords: ("DONE" | "NOT_DONE" | "SKIP") [];
   };
-  
+
+  export type NewHabit = Omit<Habit, 'id'>;
+
 
 
