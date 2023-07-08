@@ -54,7 +54,7 @@ const HabitTrackerPage: Component = () => {
     return days;
   };
 
-  const openNewHabit = () => {
+  const openNewHabitDialog = () => {
     setIsAddEditHabitDialogOpen(true);
   }
 
@@ -63,13 +63,10 @@ const HabitTrackerPage: Component = () => {
   }
 
   const onAddEditHabitDialog = (habit: Habit) => {
-    console.log('habit', habit);
     batch(()=> {
       setHabits([...habits(), habit]);
-      console.log('habits()', habits());
       setIsAddEditHabitDialogOpen(false);
     })
-
   }
 
   return (
@@ -86,7 +83,7 @@ const HabitTrackerPage: Component = () => {
             <div class="flex items-center">
 
             </div>
-            <button onClick={openNewHabit} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
+            <button onClick={openNewHabitDialog} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
               <p class="text-sm font-medium leading-none text-white">
                 Add new habit
               </p>
@@ -107,7 +104,6 @@ const HabitTrackerPage: Component = () => {
                       tabindex="0"
                       class="focus:outline-none h-16 border border-gray-100 rounded"
                     >
-                                            <td class="text-sm font-semibold leading-6 text-gray-800">ID{habit.id}</td>
                       <td class="text-sm font-semibold leading-6 text-gray-800">{habit.description}</td>
                       <For each={habit.dailyRecords}>
                         {(dailyHabitRecord) => (

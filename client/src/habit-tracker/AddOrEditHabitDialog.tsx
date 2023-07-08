@@ -4,12 +4,12 @@ import { createStore } from 'solid-js/store'
 import { DateTime } from 'luxon'
 
 interface AddOrEditHabitDialogProps {
-  addEditNewHabit: (habit: Habit)=> void;
-  closeDialog: () => void
+  addEditNewHabit: (habit: Habit)=> void,
+  closeDialog: () => void,
+  habit: Habit | null
 }
 
 export const AddOrEditHabitDialog = (props: AddOrEditHabitDialogProps) => {
-
 
   const [habit, setHabit] = createSignal<Habit>({
     id: null,
@@ -20,6 +20,7 @@ export const AddOrEditHabitDialog = (props: AddOrEditHabitDialogProps) => {
     year: 0,
     dailyRecords: []
   })
+
   return (
     <>
       <div class="relative z-100" aria-labelledby="modal-title" role="dialog" aria-modal="true">
