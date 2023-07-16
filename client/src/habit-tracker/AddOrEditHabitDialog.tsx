@@ -4,22 +4,35 @@ import { createStore } from 'solid-js/store'
 import { DateTime } from 'luxon'
 
 interface AddOrEditHabitDialogProps {
-  addEditNewHabit: (habit: Habit)=> void,
+  onAddEditHabitResponse: (habit: Habit)=> void,
   closeDialog: () => void,
   habit: Habit | null
 }
 
 export const AddOrEditHabitDialog = (props: AddOrEditHabitDialogProps) => {
 
-  const [habit, setHabit] = createSignal<Habit>({
-    id: null,
+  const url = "http://localhost:8080/api/v1/habits"
+
+  const [habit, setHabit] = createSignal<NewHabit>({
     description: '',
-    bestStrike: 0,
-    strength: 'WEEK',
-    month: 0,
-    year: 0,
-    dailyRecords: []
+    habitRecords: []
   })
+
+  const save = () => {
+   saveHabit();
+  }
+
+  async function saveHabit() {
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify(habit()),
+      headers: {
+          "Content-type": "application/json; charset=UTF-8"
+      }
+  })
+    const results = await response.json();
+    props.onAddEditHabitResponse(results as Habit);
+  }
 
   return (
     <>
@@ -44,7 +57,7 @@ export const AddOrEditHabitDialog = (props: AddOrEditHabitDialogProps) => {
                             <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">Habit name</label>
                             <div class="mt-2">
                               <input oninput={(e) => {
-                                setHabit({ ...habit(), id: Math.random().toString(16).slice(2), description: e.target.value });
+                                setHabit({ ...habit(), description: e.target.value });
                               }}
                                 type="text" name="first-name" id="first-name" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></input>
                             </div>
@@ -67,7 +80,7 @@ export const AddOrEditHabitDialog = (props: AddOrEditHabitDialogProps) => {
               <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                 <button type="button"
                   class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                  onClick={() => props.addEditNewHabit(habit())}
+                  onClick={() => save()}
                 >
                   Create new habit</button>
                 <button

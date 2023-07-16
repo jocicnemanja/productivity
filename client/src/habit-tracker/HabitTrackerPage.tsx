@@ -20,6 +20,7 @@ const HabitTrackerPage: Component = () => {
   };
 
   const [selectedYear, setSlecetedYear] = createSignal(DateTime.now().year);
+
   const [months] = createStore<Month[]>([
     { id: 1, monthName: "January" },
     { id: 2, monthName: "February" },
@@ -28,12 +29,13 @@ const HabitTrackerPage: Component = () => {
     { id: 5, monthName: "May" },
     { id: 6, monthName: "June" },
     { id: 7, monthName: "July" },
-    { id: 8, monthName: "Agust" },
+    { id: 8, monthName: "August" },
     { id: 9, monthName: "September" },
     { id: 10, monthName: "October" },
     { id: 11, monthName: "November" },
     { id: 12, monthName: "December" },
   ]);
+
   const [selectedMonth, setSelcetedMonth] = createSignal<Month>(
     months[DateTime.now().month]
   );
@@ -44,6 +46,8 @@ const HabitTrackerPage: Component = () => {
   const onMonthChange = (month: Month) => {
     setSelcetedMonth(month);
   };
+
+  const [currentDate] = createSignal(DateTime.now().toObject())
 
 
   const thForSelectedMonth = (month: Month) => {
@@ -62,7 +66,7 @@ const HabitTrackerPage: Component = () => {
     setIsAddEditHabitDialogOpen(false);
   }
 
-  const onAddEditHabitDialog = (habit: Habit) => {
+  const onAddEditHabitResponse = (habit: Habit) => {
     batch(()=> {
       setHabits([...habits(), habit]);
       setIsAddEditHabitDialogOpen(false);
@@ -73,7 +77,7 @@ const HabitTrackerPage: Component = () => {
     <>
       <Show
         when={isAddEditHabitDialogOpen()}>
-        <AddOrEditHabitDialog closeDialog={onCloseAddEditHabitDialog} addEditNewHabit={onAddEditHabitDialog} habit={null}></AddOrEditHabitDialog>
+        <AddOrEditHabitDialog closeDialog={onCloseAddEditHabitDialog} onAddEditHabitResponse={onAddEditHabitResponse} habit={null}></AddOrEditHabitDialog>
       </Show>
       <div class="sm:px-6 w-full">
         <div class="px-4 md:px-10 py-4 md:py-7">
@@ -105,9 +109,10 @@ const HabitTrackerPage: Component = () => {
                       class="focus:outline-none h-16 border border-gray-100 rounded"
                     >
                       <td class="text-sm font-semibold leading-6 text-gray-800">{habit.description}</td>
-                      <For each={habit.dailyRecords}>
-                        {(dailyHabitRecord) => (
-                          <td>
+                      <For each={habit.habitRecords}>
+                        {(dailyHabitRecord, index) => (
+
+                          <td class={index < currentDate() ? 'disabled' : ''} >
                             {dailyHabitRecord === "SKIP" ? (
                               <input
                                 class="form-check-input"
