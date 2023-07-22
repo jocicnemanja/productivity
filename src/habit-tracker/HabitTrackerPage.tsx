@@ -1,10 +1,11 @@
-import { batch, Component, createSignal, For, Show } from "solid-js";
+import { batch, Component, createResource, createSignal, For, onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { DateTime } from "luxon";
 import { Habit } from "./models/HabitModels";
 import { fakeHabitsData } from "./models/FakeHabitsData";
 import { useNavigate } from '@solidjs/router';
 import { AddOrEditHabitDialog } from './AddOrEditHabitDialog';
+import { ConformationalDialog } from '../shared/ConformationalDialog/ConformationalDialog';
 
 export type Month = {
   id: number;
@@ -12,14 +13,42 @@ export type Month = {
 };
 
 const HabitTrackerPage: Component = () => {
+
+  const fetchHabits = async () =>
+    (await fetch(`http://localhost:8080/api/v1/habits`)).json();
+
+  const  deleteHabit = async (habit: Habit) => {
+    const response = await fetch('http://localhost:8080/api/v1/habits', {
+      method: "DELETE",
+      body: JSON.stringify(habit),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }
+    })
+    setIsDeleteHabitDialogOpen(false);
+    setTmpHabit(null);
+    refetch();
+  }
   const [isAddEditHabitDialogOpen, setIsAddEditHabitDialogOpen] = createSignal(false);
-  const [habits, setHabits]  = createSignal<Habit[]>(fakeHabitsData);
+  const [isDeleteHabitDialogOpen, setIsDeleteHabitDialogOpen] = createSignal(false);
+  const [tmpHabit, setTmpHabit] = createSignal<Habit | null>(null);
+
+  // const [habits, setHabits]  = createSignal<Habit[]>([]);
+  // const [selectedMonth, setSelectedMonth] = createSignal(DateTime.now().month);
+  const [selectedYear, setSelectedYear] = createSignal(DateTime.now().year);
+
+  const [habits, { mutate, refetch }] = createResource(fetchHabits);
+
+
+  // onMount(async () => {
+  //   const res = await fetch(`http://localhost:8080/api/v1/habits`);
+  //   setHabits(await res.json());
+  // });
 
   const getDaysInMonth = (year: number, month: number): number => {
     return new Date(year, month, 0).getDate();
   };
 
-  const [selectedYear, setSlecetedYear] = createSignal(DateTime.now().year);
 
   const [months] = createStore<Month[]>([
     { id: 1, monthName: "January" },
@@ -67,10 +96,22 @@ const HabitTrackerPage: Component = () => {
   }
 
   const onAddEditHabitResponse = (habit: Habit) => {
-    batch(()=> {
-      setHabits([...habits(), habit]);
+    batch(() => {
+      mutate([...habits(), habit]);
       setIsAddEditHabitDialogOpen(false);
     })
+  }
+
+  const handleDelete = (habit: Habit) => {
+    setTmpHabit(habit);
+    setIsDeleteHabitDialogOpen(true);
+  }
+
+  const handleConfirmDelete = async () => {
+    await deleteHabit(tmpHabit() as Habit);
+    setIsDeleteHabitDialogOpen(false);
+    setTmpHabit(null);
+    refetch();
   }
 
   return (
@@ -79,6 +120,12 @@ const HabitTrackerPage: Component = () => {
         when={isAddEditHabitDialogOpen()}>
         <AddOrEditHabitDialog closeDialog={onCloseAddEditHabitDialog} onAddEditHabitResponse={onAddEditHabitResponse} habit={null}></AddOrEditHabitDialog>
       </Show>
+
+      <Show
+        when={isDeleteHabitDialogOpen()}>
+        <ConformationalDialog description='Are you sure you want to delete habit' cancel={() => setIsDeleteHabitDialogOpen(false)} confirm={handleConfirmDelete}></ConformationalDialog>
+      </Show>
+
       <div class="sm:px-6 w-full">
         <div class="px-4 md:px-10 py-4 md:py-7">
         </div>
@@ -94,21 +141,27 @@ const HabitTrackerPage: Component = () => {
             </button>
           </div>
           <div class="mt-7 overflow-x-auto">
-            <table class="w-full whitespace-nowrap">
+            <span>{habits.loading && "Loading..."}</span>
+            <span>{habits.error && "Something went wrong..."}</span>
+
+            {!habits.loading && <table class="w-full whitespace-nowrap">
               <thead>
                 <tr>
                   <th class="text-md font-semibold leading-6 text-gray-900">Habit</th>
                   {thForSelectedMonth(selectedMonth())}
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
+
+
                 <For each={habits()}>
                   {(habit: Habit) => (
                     <tr
                       tabindex="0"
                       class="focus:outline-none h-16 border border-gray-100 rounded"
                     >
-                      <td class="text-sm font-semibold leading-6 text-gray-800">{habit.description}</td>
+                      <td class="text-sm font-semibold leading-6 text-gray-800 text-left pl-3" >{habit.description}</td>
                       <For each={habit.habitRecords}>
                         {(dailyHabitRecord, index) => (
 
@@ -132,11 +185,24 @@ const HabitTrackerPage: Component = () => {
                           </td>
                         )}
                       </For>
+                      <td>
+                        <button onClick={openNewHabitDialog} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 mt-4 mr-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
+                          <p class="text-sm font-medium leading-none text-white">
+                            Edit
+                          </p>
+                        </button>
+                        <button onClick={() => handleDelete(habit)} class="focus:ring-2 focus:ring-offset-2 focus:ring-red-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-red-700 hover:bg-red-600 focus:outline-none rounded">
+                          <p class="text-sm font-medium leading-none text-white">
+                            Delete
+                          </p>
+                        </button>
+                      </td>
                     </tr>
                   )}
                 </For>
               </tbody>
-            </table>
+            </table>}
+
           </div>
         </div>
       </div>
