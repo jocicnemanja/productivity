@@ -4,7 +4,7 @@ import { render } from 'solid-js/web';
 import './index.css';
 import App from './App';
 import { Router, Routes, Route } from '@solidjs/router';
-import HabitTrackerPage from './habit-tracker/HabitTrackerPage';
+import HabitTrackerPage from './HabitTrackerPage/HabitTrackerPage';
 
 const root = document.getElementById('root');
 

@@ -1,10 +1,10 @@
 import { batch, Component, createResource, createSignal, For, onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { DateTime } from "luxon";
-import { Habit } from "./models/HabitModels";
-import { fakeHabitsData } from "./models/FakeHabitsData";
+import { Habit } from "../shared/models/Habit/HabitModels";
+import { fakeHabitsData } from "../shared/models/Habit/FakeHabitsData";
 import { useNavigate } from '@solidjs/router';
-import { AddOrEditHabitDialog } from './AddOrEditHabitDialog';
+import { NewHabitDialog } from './NewHabitDialog/NewHabitDialog';
 import { ConformationalDialog } from '../shared/ConformationalDialog/ConformationalDialog';
 
 export type Month = {
@@ -28,7 +28,11 @@ const HabitTrackerPage: Component = () => {
 
   const [isAddEditHabitDialogOpen, setIsAddEditHabitDialogOpen] = createSignal(false);
   const [isDeleteHabitDialogOpen, setIsDeleteHabitDialogOpen] = createSignal(false);
-  const [tmpHabit, setTmpHabit] = createSignal<Habit | null>(null);
+  const [tmpHabit, setTmpHabit] = createSignal<Habit>({
+    id: null,
+    description: '',
+    habitRecords: []
+  });
 
   // const [habits, setHabits]  = createSignal<Habit[]>([]);
   // const [selectedMonth, setSelectedMonth] = createSignal(DateTime.now().month);
@@ -101,12 +105,10 @@ const HabitTrackerPage: Component = () => {
 
   const handleAddEditHabitConfirm = (habit: Habit) => {
     refetch();
-    setTmpHabit(null);
     setIsAddEditHabitDialogOpen(false);
   }
 
   const handleOnCloseAddEditHabitDialog = () => {
-    setTmpHabit(null);
     setIsAddEditHabitDialogOpen(false);
   }
 
@@ -118,7 +120,6 @@ const HabitTrackerPage: Component = () => {
   const handleConfirmDelete = async () => {
     await deleteHabit(tmpHabit() as Habit);
     setIsDeleteHabitDialogOpen(false);
-    setTmpHabit(null);
     refetch();
   }
 
@@ -126,7 +127,7 @@ const HabitTrackerPage: Component = () => {
     <>
       <Show
         when={isAddEditHabitDialogOpen()}>
-        <AddOrEditHabitDialog closeDialog={handleOnCloseAddEditHabitDialog} onAddEditHabitResponse={handleAddEditHabitConfirm} habit={tmpHabit()}></AddOrEditHabitDialog>
+        <NewHabitDialog close={handleOnCloseAddEditHabitDialog} confirm={handleAddEditHabitConfirm} habit={tmpHabit()}></NewHabitDialog>
       </Show>
 
       <Show

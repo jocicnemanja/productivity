@@ -1,13 +1,13 @@
 import { createSignal } from 'solid-js'
-import { Habit } from './models/HabitModels'
+import { Habit } from '../../shared/models/Habit/HabitModels'
 
-interface AddOrEditHabitDialogProps {
-  onAddEditHabitResponse: (habit: Habit)=> void,
-  closeDialog: () => void,
+interface NewHabitDialogProps {
+  confirm: (habit: Habit)=> void,
+  close: () => void,
   habit: Habit
 }
 
-export const AddOrEditHabitDialog = (props: AddOrEditHabitDialogProps) => {
+export const NewHabitDialog = (props: NewHabitDialogProps) => {
 
   const url = "http://localhost:8080/api/v1/habits"
 
@@ -20,7 +20,7 @@ export const AddOrEditHabitDialog = (props: AddOrEditHabitDialogProps) => {
       }
   })
     const results = await response.json();
-    props.onAddEditHabitResponse(results as Habit);
+    props.confirm(results as Habit);
   }
 
   const [habit, setHabit] = createSignal<Habit>(props.habit)
@@ -79,7 +79,7 @@ export const AddOrEditHabitDialog = (props: AddOrEditHabitDialogProps) => {
                 >
                   {props.habit && props.habit.id ? 'Edit habit': 'Create new habit'}</button>
                 <button
-                  onClick={props.closeDialog}
+                  onClick={props.close}
                   type="button"
                   class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
               </div>
