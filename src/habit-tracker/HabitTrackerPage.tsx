@@ -17,18 +17,15 @@ const HabitTrackerPage: Component = () => {
   const fetchHabits = async () =>
     (await fetch(`http://localhost:8080/api/v1/habits`)).json();
 
-  const  deleteHabit = async (habit: Habit) => {
-    const response = await fetch('http://localhost:8080/api/v1/habits', {
-      method: "DELETE",
-      body: JSON.stringify(habit),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8"
-      }
-    })
-    setIsDeleteHabitDialogOpen(false);
-    setTmpHabit(null);
-    refetch();
-  }
+  const deleteHabit = async (habit: Habit) =>
+  (await fetch('http://localhost:8080/api/v1/habits', {
+    method: "DELETE",
+    body: JSON.stringify(habit),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    }
+  }));
+
   const [isAddEditHabitDialogOpen, setIsAddEditHabitDialogOpen] = createSignal(false);
   const [isDeleteHabitDialogOpen, setIsDeleteHabitDialogOpen] = createSignal(false);
   const [tmpHabit, setTmpHabit] = createSignal<Habit | null>(null);
@@ -87,19 +84,30 @@ const HabitTrackerPage: Component = () => {
     return days;
   };
 
-  const openNewHabitDialog = () => {
+
+  const handleAddHabit = () => {
+    setTmpHabit({
+      id: null,
+      description: '',
+      habitRecords: []
+    });
     setIsAddEditHabitDialogOpen(true);
   }
 
-  const onCloseAddEditHabitDialog = () => {
+  const handleEditHabit =(habit: Habit) => {
+    setTmpHabit(habit);
+    setIsAddEditHabitDialogOpen(true);
+  }
+
+  const handleAddEditHabitConfirm = (habit: Habit) => {
+    refetch();
+    setTmpHabit(null);
     setIsAddEditHabitDialogOpen(false);
   }
 
-  const onAddEditHabitResponse = (habit: Habit) => {
-    batch(() => {
-      mutate([...habits(), habit]);
-      setIsAddEditHabitDialogOpen(false);
-    })
+  const handleOnCloseAddEditHabitDialog = () => {
+    setTmpHabit(null);
+    setIsAddEditHabitDialogOpen(false);
   }
 
   const handleDelete = (habit: Habit) => {
@@ -118,7 +126,7 @@ const HabitTrackerPage: Component = () => {
     <>
       <Show
         when={isAddEditHabitDialogOpen()}>
-        <AddOrEditHabitDialog closeDialog={onCloseAddEditHabitDialog} onAddEditHabitResponse={onAddEditHabitResponse} habit={null}></AddOrEditHabitDialog>
+        <AddOrEditHabitDialog closeDialog={handleOnCloseAddEditHabitDialog} onAddEditHabitResponse={handleAddEditHabitConfirm} habit={tmpHabit()}></AddOrEditHabitDialog>
       </Show>
 
       <Show
@@ -134,7 +142,7 @@ const HabitTrackerPage: Component = () => {
             <div class="flex items-center">
 
             </div>
-            <button onClick={openNewHabitDialog} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
+            <button onClick={handleAddHabit} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
               <p class="text-sm font-medium leading-none text-white">
                 Add new habit
               </p>
@@ -186,7 +194,7 @@ const HabitTrackerPage: Component = () => {
                         )}
                       </For>
                       <td>
-                        <button onClick={openNewHabitDialog} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 mt-4 mr-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
+                        <button onClick={()=> handleEditHabit(habit)} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 mt-4 mr-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
                           <p class="text-sm font-medium leading-none text-white">
                             Edit
                           </p>
