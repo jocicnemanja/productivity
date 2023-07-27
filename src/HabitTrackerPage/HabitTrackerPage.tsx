@@ -118,9 +118,13 @@ const HabitTrackerPage: Component = () => {
   }
 
   const handleConfirmDelete = async () => {
-    await deleteHabit(tmpHabit() as Habit);
+    await deleteHabit(tmpHabit());
     setIsDeleteHabitDialogOpen(false);
     refetch();
+  }
+
+  const saveRecord = (habit: Habit) => {
+    
   }
 
   return (
@@ -188,6 +192,7 @@ const HabitTrackerPage: Component = () => {
                                 class="form-check-input"
                                 type="checkbox"
                                 id="flexCheckDefault"
+                                onChange={(e) => saveRecord(habit) }
                                 checked={dailyHabitRecord === "DONE" ? true : false}
                               />
                             )}
