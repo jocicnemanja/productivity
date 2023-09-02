@@ -24,6 +24,7 @@ const App: () => JSX.Element = () => {
               </button>
             </div>
             <div class="hidden lg:flex lg:gap-x-12">
+              <a href="/" class="text-sm font-semibold leading-6 text-gray-900">Home</a>
               <a href="habit-tracker" class="text-sm font-semibold leading-6 text-gray-900">Habit tracker</a>
               <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Learning sesions</a>
               <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Anki</a>

@@ -14,21 +14,17 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
-render(() => 
-<Router>
-  <Routes>
-    <Route path="/" component={App} >
-    <Route path="/" component={()=> <div>HOME</div>} />
-    <Route path="/habit-tracker" >
-    <Route path="/" component={HabitTrackerPage} >
-      
-      </Route>
-      <Route path="/add-new-habit" component={()=> <div>And new Habit page</div>} >
-      
-      </Route>
-    </Route>
-    </Route>
+render(() =>
+  <Router>
+    <Routes>
 
-  </Routes>
-</Router>, root!);
+      <Route path="/" component={App}>
+        <Route path="/" component={() => <div>HOME</div>} />
+        <Route path="/habit-tracker" >
+          <Route path="/" component={HabitTrackerPage} />
+          <Route path="/add-new-habit" component={HabitTrackerPage} />
+        </Route>
+      </Route>
+    </Routes>
+  </Router>, root!);
 

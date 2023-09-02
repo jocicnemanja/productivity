@@ -1,9 +1,9 @@
-import { batch, Component, createResource, createSignal, For, onMount, Show } from "solid-js";
+import { batch, Component, createMemo, createResource, createSignal, For, onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { DateTime } from "luxon";
 import { Habit } from "../shared/models/Habit/HabitModels";
 import { fakeHabitsData } from "../shared/models/Habit/FakeHabitsData";
-import { useNavigate } from '@solidjs/router';
+import { Params, Route, useLocation, useMatch, useNavigate, useParams } from '@solidjs/router';
 import { NewHabitDialog } from './NewHabitDialog/NewHabitDialog';
 import { ConformationalDialog } from '../shared/ConformationalDialog/ConformationalDialog';
 
@@ -14,11 +14,9 @@ export type Month = {
 
 const HabitTrackerPage: Component = () => {
 
-  const fetchHabits = async () =>
-    (await fetch(`http://localhost:8080/api/v1/habits`)).json();
+  const fetchHabits = async () => (await fetch(`http://localhost:8080/api/v1/habits`)).json();
 
-  const deleteHabit = async (habit: Habit) =>
-  (await fetch('http://localhost:8080/api/v1/habits', {
+  const deleteHabit = async (habit: Habit) => (await fetch('http://localhost:8080/api/v1/habits', {
     method: "DELETE",
     body: JSON.stringify(habit),
     headers: {
@@ -26,13 +24,23 @@ const HabitTrackerPage: Component = () => {
     }
   }));
 
-  const [isAddEditHabitDialogOpen, setIsAddEditHabitDialogOpen] = createSignal(false);
+
+  const location = useLocation();
+  const pathname = createMemo(() => location.pathname);
+  const navigate = useNavigate();
+  const matchAddNewHabitPath = useMatch(() => '/habit-tracker/add-new-habit');
+  
+
+
+  // const [isAddEditHabitDialogOpen, setIsAddEditHabitDialogOpen] = createSignal(false);
   const [isDeleteHabitDialogOpen, setIsDeleteHabitDialogOpen] = createSignal(false);
   const [tmpHabit, setTmpHabit] = createSignal<Habit>({
     id: null,
     description: '',
     habitRecords: []
   });
+
+  
 
   // const [habits, setHabits]  = createSignal<Habit[]>([]);
   // const [selectedMonth, setSelectedMonth] = createSignal(DateTime.now().month);
@@ -90,27 +98,32 @@ const HabitTrackerPage: Component = () => {
 
 
   const handleAddHabit = () => {
-    setTmpHabit({
-      id: null,
-      description: '',
-      habitRecords: []
-    });
-    setIsAddEditHabitDialogOpen(true);
+    // setTmpHabit({
+    //   id: null,
+    //   description: '',
+    //   habitRecords: []
+    // });
+    navigate(pathname() + "/add-new-habit")
   }
+
+  // const handleCloseAddEditHabitDialog = () => {
+  //   navigate(pathname() + "add-new-habit")
+
+  // }
 
   const handleEditHabit =(habit: Habit) => {
     setTmpHabit(habit);
-    setIsAddEditHabitDialogOpen(true);
+    // setIsAddEditHabitDialogOpen(true);
   }
 
   const handleAddEditHabitConfirm = (habit: Habit) => {
     refetch();
-    setIsAddEditHabitDialogOpen(false);
+    // setIsAddEditHabitDialogOpen(false);
   }
 
-  const handleOnCloseAddEditHabitDialog = () => {
-    setIsAddEditHabitDialogOpen(false);
-  }
+  // const handleOnCloseAddEditHabitDialog = () => {
+  //   setIsAddEditHabitDialogOpen(false);
+  // }
 
   const handleDelete = (habit: Habit) => {
     setTmpHabit(habit);
@@ -130,8 +143,8 @@ const HabitTrackerPage: Component = () => {
   return (
     <>
       <Show
-        when={isAddEditHabitDialogOpen()}>
-        <NewHabitDialog close={handleOnCloseAddEditHabitDialog} confirm={handleAddEditHabitConfirm} habit={tmpHabit()}></NewHabitDialog>
+        when={Boolean(matchAddNewHabitPath())}>
+        <NewHabitDialog habit={tmpHabit()}/>
       </Show>
 
       <Show
@@ -220,6 +233,8 @@ const HabitTrackerPage: Component = () => {
           </div>
         </div>
       </div>
+      <Route path="/" component={HabitTrackerPage} />
+      <Route path="/add-new-habit" component={HabitTrackerPage} />
     </>
   );
 };
