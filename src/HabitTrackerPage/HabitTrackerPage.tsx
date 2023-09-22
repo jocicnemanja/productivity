@@ -14,8 +14,8 @@ export type Month = {
 
 const HabitTrackerPage: Component = () => {
 
-  const fetchHabits = async () => (await fetch(`http://localhost:8080/api/v1/habits`)).json();
-
+  const fetchHabits = async (month: number, year: number) =>
+    (await fetch(`http://localhost:8080/api/v1/habits?month=${month}&year=${year}`)).json();
   const deleteHabit = async (habit: Habit) => (await fetch('http://localhost:8080/api/v1/habits', {
     method: "DELETE",
     body: JSON.stringify(habit),
@@ -24,15 +24,11 @@ const HabitTrackerPage: Component = () => {
     }
   }));
 
-
   const location = useLocation();
   const pathname = createMemo(() => location.pathname);
   const navigate = useNavigate();
   const matchAddNewHabitPath = useMatch(() => '/habit-tracker/add-new-habit');
-  
 
-
-  // const [isAddEditHabitDialogOpen, setIsAddEditHabitDialogOpen] = createSignal(false);
   const [isDeleteHabitDialogOpen, setIsDeleteHabitDialogOpen] = createSignal(false);
   const [tmpHabit, setTmpHabit] = createSignal<Habit>({
     id: null,
@@ -40,57 +36,19 @@ const HabitTrackerPage: Component = () => {
     habitRecords: []
   });
 
-  
-
-  // const [habits, setHabits]  = createSignal<Habit[]>([]);
-  // const [selectedMonth, setSelectedMonth] = createSignal(DateTime.now().month);
+  const [selectedMonth, setSelectedMonth] = createSignal(DateTime.now().month );
   const [selectedYear, setSelectedYear] = createSignal(DateTime.now().year);
 
-  const [habits, { mutate, refetch }] = createResource(fetchHabits);
+  const [habits, { mutate, refetch }] = createResource(() => fetchHabits(selectedMonth(),selectedYear()));
 
-
-  // onMount(async () => {
-  //   const res = await fetch(`http://localhost:8080/api/v1/habits`);
-  //   setHabits(await res.json());
-  // });
-
-  const getDaysInMonth = (year: number, month: number): number => {
-    return new Date(year, month, 0).getDate();
-  };
-
-
-  const [months] = createStore<Month[]>([
-    { id: 1, monthName: "January" },
-    { id: 2, monthName: "February" },
-    { id: 3, monthName: "March" },
-    { id: 4, monthName: "April" },
-    { id: 5, monthName: "May" },
-    { id: 6, monthName: "June" },
-    { id: 7, monthName: "July" },
-    { id: 8, monthName: "August" },
-    { id: 9, monthName: "September" },
-    { id: 10, monthName: "October" },
-    { id: 11, monthName: "November" },
-    { id: 12, monthName: "December" },
-  ]);
-
-  const [selectedMonth, setSelcetedMonth] = createSignal<Month>(
-    months[DateTime.now().month]
-  );
-  const daysInMonth = () => getDaysInMonth(selectedYear(), selectedMonth().id);
-
-  const onYearChange = (year: Month) => { };
-
-  const onMonthChange = (month: Month) => {
-    setSelcetedMonth(month);
-  };
+  const onSearch = () => fetchHabits(selectedMonth(),selectedYear());
 
   const [currentDate] = createSignal(DateTime.now().toObject())
 
 
-  const thForSelectedMonth = (month: Month) => {
+  const thForSelectedMonth = (month: number) => {
     const days = [];
-    for (let i = 1; i <= daysInMonth(); i++) {
+    for (let i = 1; i <=  new Date(selectedYear(), selectedMonth() , 0).getDate() ; i++) {
       days.push(<th class="text-md font-semibold leading-6 text-gray-900" >{i}</th>);
     }
     return days;
@@ -98,32 +56,16 @@ const HabitTrackerPage: Component = () => {
 
 
   const handleAddHabit = () => {
-    // setTmpHabit({
-    //   id: null,
-    //   description: '',
-    //   habitRecords: []
-    // });
     navigate(pathname() + "/add-new-habit")
   }
 
-  // const handleCloseAddEditHabitDialog = () => {
-  //   navigate(pathname() + "add-new-habit")
-
-  // }
-
-  const handleEditHabit =(habit: Habit) => {
+  const handleEditHabit = (habit: Habit) => {
     setTmpHabit(habit);
-    // setIsAddEditHabitDialogOpen(true);
   }
 
   const handleAddEditHabitConfirm = (habit: Habit) => {
     refetch();
-    // setIsAddEditHabitDialogOpen(false);
   }
-
-  // const handleOnCloseAddEditHabitDialog = () => {
-  //   setIsAddEditHabitDialogOpen(false);
-  // }
 
   const handleDelete = (habit: Habit) => {
     setTmpHabit(habit);
@@ -137,14 +79,14 @@ const HabitTrackerPage: Component = () => {
   }
 
   const saveRecord = (habit: Habit) => {
-    
+
   }
 
   return (
     <>
       <Show
         when={Boolean(matchAddNewHabitPath())}>
-        <NewHabitDialog habit={tmpHabit()}/>
+        <NewHabitDialog habit={tmpHabit()} />
       </Show>
 
       <Show
@@ -157,8 +99,31 @@ const HabitTrackerPage: Component = () => {
         </div>
         <div class="bg-white py-4 md:py-7 px-4 md:px-8 xl:px-10">
           <div class="sm:flex items-center justify-between">
-            <div class="flex items-center">
+            <div class="flex">
+              <div class="border-b border-gray-900/10 pb-12">
 
+                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div class="sm:col-span-3">
+                    <label for="month" class="block text-sm font-medium leading-6 text-gray-900">Month</label>
+                    <div class="mt-2">
+                      <input type="text" name="month" id="month" autocomplete="month" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></input>
+                    </div>
+                  </div>
+
+                  <div class="sm:col-span-3">
+                    <label for="year" class="block text-sm font-medium leading-6 text-gray-900">Year</label>
+                    <div class="mt-2">
+                      <input type="text" name="year" id="year" autocomplete="year" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></input>
+                    </div>
+                  </div>
+
+                        <button onClick={onSearch} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
+              <p class="text-sm font-medium leading-none text-white">
+              Search
+              </p>
+            </button>
+                </div>
+              </div>
             </div>
             <button onClick={handleAddHabit} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
               <p class="text-sm font-medium leading-none text-white">
@@ -205,15 +170,15 @@ const HabitTrackerPage: Component = () => {
                                 class="form-check-input"
                                 type="checkbox"
                                 id="flexCheckDefault"
-                                onChange={(e) => saveRecord(habit) }
-                                checked={dailyHabitRecord === "DONE" ? true : false}
+                                onChange={(e) => saveRecord(habit)}
+                                checked={dailyHabitRecord === "DONE"}
                               />
                             )}
                           </td>
                         )}
                       </For>
                       <td>
-                        <button onClick={()=> handleEditHabit(habit)} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 mt-4 mr-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
+                        <button onClick={() => handleEditHabit(habit)} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 mt-4 mr-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
                           <p class="text-sm font-medium leading-none text-white">
                             Edit
                           </p>
