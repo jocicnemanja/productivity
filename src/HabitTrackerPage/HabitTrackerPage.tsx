@@ -41,7 +41,7 @@ const HabitTrackerPage: Component = () => {
 
   const [habits, { mutate, refetch }] = createResource(() => fetchHabits(selectedMonth(),selectedYear()));
 
-  const onSearch = () => fetchHabits(selectedMonth(),selectedYear());
+  const onSearch = () => refetch();
 
   const [currentDate] = createSignal(DateTime.now().toObject())
 
@@ -106,14 +106,18 @@ const HabitTrackerPage: Component = () => {
                   <div class="sm:col-span-3">
                     <label for="month" class="block text-sm font-medium leading-6 text-gray-900">Month</label>
                     <div class="mt-2">
-                      <input type="text" name="month" id="month" autocomplete="month" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></input>
+                      <input         onInput={(e) => {
+          setSelectedMonth(parseInt(e.target.value));
+        }} type="text" name="month" id="month" autocomplete="month" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></input>
                     </div>
                   </div>
 
                   <div class="sm:col-span-3">
                     <label for="year" class="block text-sm font-medium leading-6 text-gray-900">Year</label>
                     <div class="mt-2">
-                      <input type="text" name="year" id="year" autocomplete="year" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></input>
+                      <input         onInput={(e) => {
+          setSelectedYear(parseInt( e.target.value));
+        }} type="text" name="year" id="year" autocomplete="year" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></input>
                     </div>
                   </div>
 
