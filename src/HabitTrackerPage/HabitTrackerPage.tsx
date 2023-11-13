@@ -37,8 +37,8 @@ const HabitTrackerPage: Component = () => {
   }
 
   const handleUpdateHabit = (habit: Habit) => {
-    navigate(pathname() + "/update-habit/" + habit.id);
     setTmpHabit(habit);
+    navigate(pathname() + "/update-habit/" + habit.id);
   }
 
   const handleConfirmDelete = async () => {
@@ -47,9 +47,7 @@ const HabitTrackerPage: Component = () => {
     refetch();
   }
 
-  const createOrUpdateRecord = (Habit: Habit) => {
 
-  }
 
   const onSearch = () => refetch();
 
@@ -67,12 +65,12 @@ const HabitTrackerPage: Component = () => {
 
       <Show
         when={Boolean(matchUpdateHabitPath())}>
-        <CreateHabitDialog close={() => navigate(pathname())} confirm={() => refetch()} habit={tmpHabit()} />
+        <CreateHabitDialog close={() => navigate('/habit-tracker/')} confirm={() => refetch()} habit={tmpHabit()} />
       </Show>
 
       <Show
         when={matchDeleteHabitPath()}>
-        <ConformationalDialog cancel={() => navigate(pathname())} confirm={handleConfirmDelete} description='Are you sure you want to delete habit'></ConformationalDialog>
+        <ConformationalDialog cancel={() => navigate('/habit-tracker/')} confirm={handleConfirmDelete} description='Are you sure you want to delete habit'></ConformationalDialog>
       </Show>
 
       <div class="sm:px-6 w-full">
