@@ -1,41 +1,28 @@
 import { createSignal } from 'solid-js'
 import { Habit } from '../../shared/models/Habit/HabitModels'
+import { createHabit } from '../HabitTrackerService'
 import { useNavigate } from '@solidjs/router'
 
-interface NewHabitDialogProps {
-  // confirm: (habit: Habit)=> void,
-  habit: Habit
+interface CreateHabitDialogProps {
+  habit: Habit,
+  close: () => void,
+  confirm: () => void
 }
 
-export const NewHabitDialog = (props: NewHabitDialogProps) => {
-
-  const navigate = useNavigate();
-
-  const url = "http://localhost:8080/api/v1/habits"
-
-  const saveHabit = async (habit: Habit) => {
-    const response = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify(habit),
-      headers: {
-          "Content-type": "application/json; charset=UTF-8"
-      }
-  })
-    const results = await response.json();
-    // props.confirm(results as Habit);
-  }
+export const CreateHabitDialog = (props: CreateHabitDialogProps) => {
 
   const [habit, setHabit] = createSignal<Habit>(props.habit)
   const [isSaving, setIsSaving] = createSignal<boolean>(false)
 
-  const save =  async () => {
+  const save = async () => {
     setIsSaving(true);
-    await saveHabit(habit());
-    navigate('/habit-tracker', {replace: true})
+    await createHabit(habit());
+    setIsSaving(false);
+    props.confirm();
   }
 
   const close = () => {
-    navigate('/habit-tracker', {replace: true})
+    props.close();
   }
 
   return (
@@ -61,8 +48,8 @@ export const NewHabitDialog = (props: NewHabitDialogProps) => {
                             <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">Habit name</label>
                             <div class="mt-2">
                               <input
-                               oninput={(e) => setHabit({ ...habit(), description: e.target.value })}
-                              value={habit().description}
+                                oninput={(e) => setHabit({ ...habit(), description: e.target.value })}
+                                value={habit().description}
                                 type="text" name="first-name" id="first-name" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></input>
                             </div>
                           </div>
@@ -96,7 +83,7 @@ export const NewHabitDialog = (props: NewHabitDialogProps) => {
                     class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                     onClick={save}
                   >
-                    {props.habit && props.habit.id ? 'Edit habit' : 'Create new habit'}
+                    {props.habit && props.habit.id ? 'Update habit' : 'Create habit'}
                   </button>
                 }
                 <button
